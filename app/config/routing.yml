@@ -1,0 +1,24 @@
+stad_line_user:
+    resource: "@StadLineUserBundle/Resources/config/routing.yml"
+    prefix:   /user
+
+app:
+    resource: "@AppBundle/Controller/"
+    type:     annotation
+
+login:
+    path:   /login
+    defaults:  { _controller: StadLineUserBundle:Security:login }
+
+login_check:
+    path:   /login_check
+
+logout:
+    path:  /logout
+
+git:
+    path:  /git
+
+homepage:
+    path:  /
+    defaults:  { _controller: AppBundle:Default:index }
