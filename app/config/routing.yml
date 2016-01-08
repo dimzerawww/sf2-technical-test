@@ -18,6 +18,11 @@ logout:
 
 git:
     path:  /git
+    defaults:  { _controller: AppBundle:Git:index }
+
+git_user_check:
+    path:  /git_user_check
+    defaults:  { _controller: AppBundle:Git:checkUser }
 
 homepage:
     path:  /
