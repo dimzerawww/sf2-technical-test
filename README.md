@@ -9,7 +9,7 @@
 ### Temps passé
 
 * Installation et configuration environnement (sur PC Windows non préparé pour le dev) : 30 min
-* Développements et réalisation du projet + lecteur documentations éventuelles: 5h
+* Développements et réalisation du projet + lecture de documentations éventuelles: 5h
 
 ### A savoir
 
