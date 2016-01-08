@@ -1,0 +1,18 @@
+{% block body %}
+
+  {% if error %}
+    <div class="alert alert-danger">{{ error }}</div>
+  {% endif %}
+ 
+
+  <form action="{{ path('git_repository_check') }}" method="post">
+    <label for="git_user">Dépôt :</label>
+    <input type="text" id="git_repository" name="git_repository" value="" />
+
+    <label for="git_user">Commentaire :</label>
+    <textarea id="git_comment" name="git_comment" /></textarea>
+
+    <input type="submit" value="Rechercher" />
+  </form>
+
+{% endblock %}

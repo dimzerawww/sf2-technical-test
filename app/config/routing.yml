@@ -20,9 +20,17 @@ git:
     path:  /git
     defaults:  { _controller: AppBundle:Git:index }
 
+git_username:
+    path:   /git/{git_username}/comment
+    defaults:    { _controller: AppBundle:Git:view }
+
 git_user_check:
     path:  /git_user_check
     defaults:  { _controller: AppBundle:Git:checkUser }
+
+git_repository_check:
+    path:   /git_repository_check
+    defaults:    { _controller: AppBundle:Git:checkRepository }
 
 homepage:
     path:  /

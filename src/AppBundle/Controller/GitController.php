@@ -22,7 +22,10 @@ class GitController extends Controller
 
         if (is_string($_POST['git_user'])){
             if ($this->performUrlRequest($user)->total_count > 0){ // Si la requête GitHub retourne des résultats
-                return "bien ouej";
+                // Redirection vers l'url personnalisée en fonction du nom d'utilisateur
+                return $this->redirect(
+                    $this->generateUrl("git_username", array("git_username" => $_POST['git_user']))
+                );
             }
             else {
                 $error = "Compte GitHub non trouvé";
@@ -50,5 +53,13 @@ class GitController extends Controller
         $data = json_decode($response); // Décodage de la réponse
 
         return $data;
+    }
+
+    public function viewAction($git_username)
+    {
+        // Affichage du template comment.html.twig
+        return $this->render('AppBundle:Git:comment.html.twig', array(
+            'error' => "",
+        ));
     }
 }
