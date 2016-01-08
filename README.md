@@ -2,9 +2,9 @@
 
 ### Infos utiles
 
-login : user
-password : user
-bdd : symfony
+* login : user
+* password : user
+* bdd : symfony
 
 ### Temps passé
 
