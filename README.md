@@ -16,3 +16,11 @@
 * J'ai effectué une vérification de l'utilisateur via la saisie d'un champ texte et non d'un select
 * J'ai effectué une vérification du dépôt via l'API Git (/repos)
 * La partie poster/récupérer les commentaires n'est pas traité, pour une question de sommeil (il est 3h du matin :D) et pour ne pas forcer le timing
+
+### Chez Stadline
+
+* login : dimitriwarez
+* password : stadline
+* bdd : symfony
+
+
