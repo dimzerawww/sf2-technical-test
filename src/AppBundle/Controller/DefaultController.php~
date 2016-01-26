@@ -10,7 +10,5 @@ class DefaultController extends Controller
 {
     public function indexAction(Request $request)
     {
-        // Redirection de la racine vers /login
-        return $this->redirectToRoute('login');
     }
 }

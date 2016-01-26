@@ -1,27 +1,16 @@
-stad_line_user:
-    resource: "@StadLineUserBundle/Resources/config/routing.yml"
-    prefix:   /user
+fos_user:
+    resource: "@FOSUserBundle/Resources/config/routing/all.xml"
 
 app:
     resource: "@AppBundle/Controller/"
     type:     annotation
 
-login:
-    path:   /login
-    defaults:  { _controller: StadLineUserBundle:Security:login }
-
-login_check:
-    path:   /login_check
-
-logout:
-    path:  /logout
-
 git:
-    path:  /git
+    path:  /
     defaults:  { _controller: AppBundle:Git:index }
 
 git_username:
-    path:   /git/{git_username}/comment
+    path:   /{git_username}/comment
     defaults:    { _controller: AppBundle:Git:view }
 
 git_user_check:
@@ -31,7 +20,3 @@ git_user_check:
 git_repository_check:
     path:   /git_repository_check
     defaults:    { _controller: AppBundle:Git:checkRepository }
-
-homepage:
-    path:  /
-    defaults:  { _controller: AppBundle:Default:index }
