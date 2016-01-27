@@ -5,7 +5,6 @@ namespace AppBundle\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
-use Guzzle\Http\Client;
 use AppBundle\Entity\Comment;
 use AppBundle\Form\CommentType;
 
@@ -23,18 +22,16 @@ class GitController extends Controller
     }
 
     /**
-     * ???
+     * Check if user exists in GitHub and redirect to comment page
+     * 
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
     public function checkUserAction(Request $request){
         $git_username = $request->request->get('git_username');
         if ( is_string($git_username) && !empty($git_username) ){
-            // If Git Request returns results
             if ($this->performGitRequest('search/users?q='.$git_username)['total_count'] > 0){
-                // Save username in session
                 $request->getSession()->set('git_username', $git_username); 
-                // Redirect to custom username route
                 return $this->redirect($this->generateUrl("git_username", array('git_username' => $git_username)));
             }
             else {
@@ -44,12 +41,14 @@ class GitController extends Controller
         else {
             $error = "Le champ saisi n'est pas une chaine de caractères ou est vide";
         }
-        // Display template "index.html.twig"
+
         return $this->render('AppBundle:Git:index.html.twig', array('error' => $error));
     }
 
     /**
-     * ??
+     * Check if repository exists is a repository of the user and add the comment
+     * 
+     * 
      * @param $form_data
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
@@ -68,13 +67,10 @@ class GitController extends Controller
         } elseif(empty($form_data->getContent())) {
             $error = "Veuillez saisir un commentaire";
         } else {
-            // Add comment
             $this->addComment($form_data);
-            // Redirect to git user route
             return $this->redirect($this->generateUrl("git_username", array('git_username' => $git_username)));
         }
         
-        // Display page with the error
         return $this->viewAction($git_username, $request, $error);
     }
 
@@ -90,14 +86,12 @@ class GitController extends Controller
     {
         // If username is not in session or is not the same as in session
         if ( !$request->getSession()->get('git_username') || $request->getSession()->get('git_username') != $git_username ){
-            // Redirect to the form in the "git" route
             return $this->redirectToRoute('git');
         }
         
         $form = $this->generateCommentForm($git_username);
         $form->handleRequest($request);
         if ($form->isValid()){
-            // Check if the repository exists and if is it a repository of the current user
             $this->checkRepositoryAction($form->getData(), $request);
         }
 
@@ -156,13 +150,6 @@ class GitController extends Controller
     private function performGitRequest($parameters){
         $gitClient = $this->container->get('guzzle.git.client');
         $data = $gitClient->get($parameters)->send()->json();
-        /*
-        try {
-            $response = $request->send();
-        } catch (\Guzzle\Http\Exception\ClientErrorResponseException $e) {
-            return 0;
-        }
-        */
         
         return $data;
     }
