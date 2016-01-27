@@ -2,6 +2,8 @@
 
 namespace AppBundle\Git;
 
+use Guzzle\Http\Exception\RequestException;
+
 class GitRepository
 {
     /**
@@ -18,10 +20,10 @@ class GitRepository
             || !$data['owner']['login'] == $username
         ) {
             $error = "Ce dépôt n'appartient pas à l'utilisateur Git saisi précédemment";
-            // return
+            // return ?
         } elseif(empty($comment)) {
             $error = "Veuillez saisir un commentaire";
-            // return
+            // return ?
         } else {
             return true;
         }
@@ -36,8 +38,9 @@ class GitRepository
     public function testSend($gitapi_request){
         try{
             $gitapi_request->send();
-        } catch (Exception $ex) {
-            return false;
+        } catch (RequestException $e) {
+            $error = $e->getResponse()->getStatusCode();
+            //return ?
         }
         
         return true;
