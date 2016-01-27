@@ -132,18 +132,9 @@ class GitController extends Controller
      * @return mixed
      */
     private function generateCommentForm($user){
-        // New Comment object
         $comment = new Comment();
         $comment->setUser($user);
-        // Generate the comment form
-//        $form  = $this->createBuilder('comment', $comment);
-        $form = $this->createFormBuilder('form', $comment)
-            ->add('user', HiddenType::class)
-            ->add('repository', 'text')
-            ->add('content', 'textarea')
-            ->add('save', 'submit')
-            ->getForm()
-        ;
+        $form = $this->createForm(new CommentType(), $comment);
         
         return $form;
     }
