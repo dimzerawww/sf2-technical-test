@@ -4,18 +4,6 @@
     <div class="alert alert-danger">{{ error }}</div>
     {% endif %}
  
-<!--
-    <form action="{{ path('git_repository_check') }}" method="post">
-        <input type="hidden" id="git_username" name="git_username" value="{{ git_username }}">
-        <label for="git_repository">Dépôt :</label>
-        <input type="text" id="git_repository" name="git_repository" value="" />
-
-        <label for="git_comment">Commentaire :</label>
-        <textarea id="git_comment" name="git_comment" /></textarea>
-
-        <input type="submit" value="Valider" />
-    </form>
--->
     {{ form(form) }}
     
     <table>

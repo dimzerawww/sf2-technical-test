@@ -22,13 +22,9 @@ class GitController extends Controller
         ));
     }
     
-    public function addComment($content, $user, $repository){
+    public function addComment($form_data){
         /* Create and define new object "Comment" before insert */
-        $comment = new Comment();
-        $comment->setContent($content);
-        $comment->setUser($user);
-        $comment->setRepository($repository);
-        
+        $comment = $form_data;
         // Get the Doctrine EntityManager
         $em = $this->getDoctrine()->getManager();
         // Entity Persistence
@@ -58,18 +54,16 @@ class GitController extends Controller
         return $this->render('AppBundle:Git:index.html.twig', array('error' => $error));
     }
 
-    public function checkRepositoryAction(Request $request){
+    public function checkRepositoryAction($form_data, Request $request){
         /* Define variables */
-        $git_username = $request->request->get('git_username');
-        $git_repository = $request->request->get('git_repository'); // {user}/{repo}
-        $git_comment = $request->request->get('git_comment');
+        $git_username = $form_data->getUser();
         $error = "";
-        $data = $this->performGitRequest('repos/'.$git_repository);
+        $data = $this->performGitRequest('repos/'.$form_data->getRepository());
         if ($data != 0){
             if ($data['owner']['login'] == $git_username){
-                if (!empty($git_comment)){
+                if (!empty($form_data->getContent())){
                     // Add comment
-                    $this->addComment($git_comment, $git_username, $git_repository);
+                    $this->addComment($form_data);
                     // Redirect to git user route
                     return $this->redirect($this->generateUrl("git_username", array('git_username' => $git_username)));
                 }
@@ -91,7 +85,7 @@ class GitController extends Controller
     public function generateCommentForm($user){
         // New Comment object
         $comment = new Comment();
-        // Set the user of the comment with the parameter $use
+        // Set the user of the comment with the parameter $user
         $comment->setUser($user);
         // Generate the comment form
         $form = $this->get('form.factory')->createBuilder('form', $comment)
@@ -142,7 +136,7 @@ class GitController extends Controller
         // If form values are valid
         if ($form->isValid()){
             // Check if the repository exists and if is it a repository of the current user
-            $this->checkRepositoryAction($request);
+            $this->checkRepositoryAction($form->getData(), $request);
         }
         
         // Display template "comment.html.twig"

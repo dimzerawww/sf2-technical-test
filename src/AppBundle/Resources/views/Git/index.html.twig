@@ -1,15 +1,15 @@
 {% block body %}
 
-  {% if error %}
-    <div class="alert alert-danger">{{ error }}</div>
-  {% endif %}
+    {% if error %}
+        <div class="alert alert-danger">{{ error }}</div>
+    {% endif %}
  
 
-  <form action="{{ path('git_user_check') }}" method="post">
-    <label for="git_user">Utilisateur :</label>
-    <input type="text" id="git_username" name="git_username" value="" />
+    <form action="{{ path('git_user_check') }}" method="post">
+        <label for="git_user">Utilisateur :</label>
+        <input type="text" id="git_username" name="git_username" value="" />
 
-    <input type="submit" value="Rechercher" />
-  </form>
+        <input type="submit" value="Rechercher" />
+    </form>
 
 {% endblock %}
