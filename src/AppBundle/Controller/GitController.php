@@ -79,8 +79,8 @@ class GitController extends Controller
     }
 
     /**
-     *
-     * ???
+     * Display the comment page with the comment form
+     * 
      * @param $git_username
      * @param Request $request
      * @param string $error
@@ -93,17 +93,14 @@ class GitController extends Controller
             // Redirect to the form in the "git" route
             return $this->redirectToRoute('git');
         }
-        // Get the Comment Form
+        
         $form = $this->generateCommentForm($git_username);
-        // Link POST variables and form
         $form->handleRequest($request);
-        // If form values are valid
         if ($form->isValid()){
             // Check if the repository exists and if is it a repository of the current user
             $this->checkRepositoryAction($form->getData(), $request);
         }
 
-        // Display template "comment.html.twig"
         return $this->render('AppBundle:Git:comment.html.twig', array(
             'git_username' => $git_username,
             'error' => $error,
@@ -113,21 +110,19 @@ class GitController extends Controller
     }
 
     /**
-     * Create and define new object "Comment" before insert
+     * Persist the posted comment
      *
-     * @param $form_data
+     * @param $comment
      */
-    private function addComment($form_data){
-
-        $comment = $form_data;
-
-        // persist
+    private function addComment($comment){
         $em = $this->getDoctrine()->getManager();
         $em->persist($comment);
         $em->flush();
     }
 
     /**
+     * Generate the comment form
+     * 
      * @param $user
      * @return mixed
      */
@@ -140,28 +135,34 @@ class GitController extends Controller
     }
 
     /**
+     * Get comments of the user
+     * 
      * @param $user
      * @return mixed
      */
     private function getComments($user){
-        // Get the Doctrine EntityManager
         $em = $this->getDoctrine()->getManager();
-        // Get comments of the user in parameter
         $comments = $em->getRepository('AppBundle:Comment')->findBy(array('user' => $user), array('id' => 'DESC'));
 
         return $comments;
     }
     
+    /**
+     * Request the Git API to see if user exists
+     * 
+     * @param $parameters
+     * @return mixed
+     */
     private function performGitRequest($parameters){
-        /* Send request to Git API and return the response into json format */
-        $client = new Client('https://api.github.com');
-        $request = $client->get($parameters);
+        $gitClient = $this->container->get('guzzle.git.client');
+        $data = $gitClient->get($parameters)->send()->json();
+        /*
         try {
             $response = $request->send();
         } catch (\Guzzle\Http\Exception\ClientErrorResponseException $e) {
             return 0;
         }
-        $data = $response->json();
+        */
         
         return $data;
     }
