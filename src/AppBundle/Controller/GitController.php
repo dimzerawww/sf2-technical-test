@@ -7,6 +7,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Guzzle\Http\Client;
 use AppBundle\Entity\Comment;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 
 class GitController extends Controller
 {
@@ -20,7 +21,22 @@ class GitController extends Controller
             'error'         => '',
         ));
     }
-
+    
+    public function addComment($content, $user, $repository){
+        /* Create and define new object "Comment" before insert */
+        $comment = new Comment();
+        $comment->setContent($content);
+        $comment->setUser($user);
+        $comment->setRepository($repository);
+        
+        // Get the Doctrine EntityManager
+        $em = $this->getDoctrine()->getManager();
+        // Entity Persistence
+        $em->persist($comment);
+        // Insert in database (by flush)
+        $em->flush();
+    }
+    
     public function checkUserAction(Request $request){
         $git_username = $request->request->get('git_username');
         if ( is_string($git_username) && !empty($git_username) ){
@@ -72,6 +88,32 @@ class GitController extends Controller
         return $this->viewAction($git_username, $request, $error);
     }
 
+    public function generateCommentForm($user){
+        // New Comment object
+        $comment = new Comment();
+        // Set the user of the comment with the parameter $use
+        $comment->setUser($user);
+        // Generate the comment form
+        $form = $this->get('form.factory')->createBuilder('form', $comment)
+            ->add('user', HiddenType::class)
+            ->add('repository', 'text')
+            ->add('content', 'textarea')
+            ->add('save', 'submit')
+            ->getForm()
+        ;
+        
+        return $form;
+    }
+    
+    public function getComments($user){
+        // Get the Doctrine EntityManager
+        $em = $this->getDoctrine()->getManager();
+        // Get comments of the user in parameter
+        $comments = $em->getRepository('AppBundle:Comment')->findBy(array('user' => $user), array('id' => 'DESC'));
+
+        return $comments;
+    }
+    
     public function performGitRequest($parameters){
         /* Send request to Git API and return the response into json format */
         $client = new Client('https://api.github.com');
@@ -85,30 +127,6 @@ class GitController extends Controller
         
         return $data;
     }
-
-    public function addComment($content, $user, $repository){
-        /* Create and define new object "Comment" before insert */
-        $comment = new Comment();
-        $comment->setContent($content);
-        $comment->setUser($user);
-        $comment->setRepository($repository);
-        
-        // Get the Doctrine EntityManager
-        $em = $this->getDoctrine()->getManager();
-        // Entity Persistence
-        $em->persist($comment);
-        // Insert in database (by flush)
-        $em->flush();
-    }
-    
-    public function getComments($user){
-        // Get the Doctrine EntityManager
-        $em = $this->getDoctrine()->getManager();
-        // Get comments of the user in parameter
-        $comments = $em->getRepository('AppBundle:Comment')->findBy(array('user' => $user), array('id' => 'DESC'));
-
-        return $comments;
-    }
     
     public function viewAction($git_username, Request $request, $error = "")
     {
@@ -117,11 +135,22 @@ class GitController extends Controller
             // Redirect to the form in the "git" route
             return $this->redirectToRoute('git');
         }
+        // Get the Comment Form
+        $form = $this->generateCommentForm($git_username);
+        // Link POST variables and form
+        $form->handleRequest($request);
+        // If form values are valid
+        if ($form->isValid()){
+            // Check if the repository exists and if is it a repository of the current user
+            $this->checkRepositoryAction($request);
+        }
+        
         // Display template "comment.html.twig"
         return $this->render('AppBundle:Git:comment.html.twig', array(
             'git_username' => $git_username,
             'error' => $error,
             'comments' => $this->getComments($git_username),
+            'form' => $form->createView(),
         ));
     }
 }

@@ -4,7 +4,7 @@
     <div class="alert alert-danger">{{ error }}</div>
     {% endif %}
  
-
+<!--
     <form action="{{ path('git_repository_check') }}" method="post">
         <input type="hidden" id="git_username" name="git_username" value="{{ git_username }}">
         <label for="git_repository">Dépôt :</label>
@@ -15,11 +15,13 @@
 
         <input type="submit" value="Valider" />
     </form>
-
+-->
+    {{ form(form) }}
+    
     <table>
         <th>Commentaire</th>
         <th>Dépôt</th>
-        {% for comment in comments %}
+        {% for comment in comments %}       
         <tr>
             <td>{{ comment.content }}</td>
             <td>{{ comment.repository }}</td>
