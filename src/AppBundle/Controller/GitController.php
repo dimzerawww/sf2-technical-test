@@ -7,7 +7,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Guzzle\Http\Client;
 use AppBundle\Entity\Comment;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use AppBundle\Form\CommentType;
 
 class GitController extends Controller
 {
@@ -65,7 +65,7 @@ class GitController extends Controller
             || !$data['owner']['login'] == $git_username
         ) {
             $error = "Ce dépôt n'appartient pas à l'utilisateur Git saisi précédemment";
-        } elseif(empty($form_data->getContent()) {
+        } elseif(empty($form_data->getContent())) {
             $error = "Veuillez saisir un commentaire";
         } else {
             // Add comment
