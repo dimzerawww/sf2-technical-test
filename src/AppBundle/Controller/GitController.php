@@ -28,7 +28,7 @@ class GitController extends Controller
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
     public function checkUserAction(Request $request){
-        $gitUserService = $this->container->get('app.gituser');
+        $gitUserService = $this->container->get('app.git.user');
         $git_username = $request->request->get('git_username');
         if ( $gitUserService->isValid($git_username) ){
             if ($this->performGitRequest('search/users?q='.$git_username)['total_count'] > 0){
@@ -55,7 +55,7 @@ class GitController extends Controller
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
     public function checkRepositoryAction($form_data, Request $request){
-        $gitRepositoryService = $this->container->get('app.gitrepository');
+        $gitRepositoryService = $this->container->get('app.git.repository');
         $error = "";
         $git_username = $form_data->getUser();
         $git_comment = $form_data->getContent();
@@ -142,8 +142,8 @@ class GitController extends Controller
      * @return mixed
      */
     private function performGitRequest($parameters){
-        $gitClientService = $this->container->get('guzzle.gitclient');
-        $gitRepositoryService = $this->container->get('app.gitrepository');
+        $gitClientService = $this->container->get('guzzle.git.client');
+        $gitRepositoryService = $this->container->get('app.git.repository');
         $git_request = $gitClientService->get($parameters);
         if ($gitRepositoryService->testSend($git_request)){
             $data = $gitClientService->get($parameters)->send()->json();
