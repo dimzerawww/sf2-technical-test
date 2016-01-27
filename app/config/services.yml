@@ -10,6 +10,10 @@ services:
 #   service_name:
 #       class: AppBundle\Directory\ClassName
 #       arguments: ["@another_service_name", "plain_value", "%parameter_name%"]
+    app.gituser:
+        class: AppBundle\Git\GitUser
+    app.gitrepository:
+        class: AppBundle\Git\GitRepository
     guzzle.git.client:
         class: %class.guzzle.client%
         arguments: [%git.baseurl%]

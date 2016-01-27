@@ -28,8 +28,9 @@ class GitController extends Controller
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
     public function checkUserAction(Request $request){
+        $gitUserService = $this->container->get('app.gituser');
         $git_username = $request->request->get('git_username');
-        if ( is_string($git_username) && !empty($git_username) ){
+        if ( $gitUserService->isValid($git_username) ){
             if ($this->performGitRequest('search/users?q='.$git_username)['total_count'] > 0){
                 $request->getSession()->set('git_username', $git_username); 
                 return $this->redirect($this->generateUrl("git_username", array('git_username' => $git_username)));
@@ -46,7 +47,7 @@ class GitController extends Controller
     }
 
     /**
-     * Check if repository exists is a repository of the user and add the comment
+     * Check if repository exists, if it is a repository of the user and add the comment
      * 
      * 
      * @param $form_data
@@ -54,19 +55,12 @@ class GitController extends Controller
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
     public function checkRepositoryAction($form_data, Request $request){
-        $git_username = $form_data->getUser();
+        $gitRepositoryService = $this->container->get('app.gitrepository');
         $error = "";
-        $data = $this->performGitRequest('repos/'.$form_data->getRepository());
-        if ($data == 0) {
-            $error = "Aucun dépôt de ce nom trouvé sur GitHub";
-        }else if(!isset($data['owner'])
-            || !isset($data['owner']['login'])
-            || !$data['owner']['login'] == $git_username
-        ) {
-            $error = "Ce dépôt n'appartient pas à l'utilisateur Git saisi précédemment";
-        } elseif(empty($form_data->getContent())) {
-            $error = "Veuillez saisir un commentaire";
-        } else {
+        $git_username = $form_data->getUser();
+        $git_comment = $form_data->getContent();
+        $git_data = $this->performGitRequest('repos/'.$form_data->getRepository());
+        if ($gitRepositoryService->isValid($git_data, $git_comment, $git_username)){
             $this->addComment($form_data);
             return $this->redirect($this->generateUrl("git_username", array('git_username' => $git_username)));
         }
@@ -148,8 +142,12 @@ class GitController extends Controller
      * @return mixed
      */
     private function performGitRequest($parameters){
-        $gitClient = $this->container->get('guzzle.git.client');
-        $data = $gitClient->get($parameters)->send()->json();
+        $gitClientService = $this->container->get('guzzle.gitclient');
+        $gitRepositoryService = $this->container->get('app.gitrepository');
+        $git_request = $gitClientService->get($parameters);
+        if ($gitRepositoryService->testSend($git_request)){
+            $data = $gitClientService->get($parameters)->send()->json();
+        }
         
         return $data;
     }
