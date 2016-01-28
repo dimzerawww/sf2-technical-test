@@ -10,6 +10,7 @@ use AppBundle\Form\CommentType;
 
 class GitController extends Controller
 {
+    
     /**
      * HomePage
      * @Route("/", name="git")
@@ -30,7 +31,7 @@ class GitController extends Controller
     public function checkUserAction(Request $request){
         $gitUserService = $this->container->get('app.git.user');
         $git_username = $request->request->get('git_username');
-        $git_response = $this->performGitRequest('search/users?q='.$git_username);
+        $git_response = $this->performGitRequest('search/users?q='.$git_username.'&');
         if ($gitUserService->validate($git_username) && $gitUserService->isValid($git_response)){
             $request->getSession()->set('git_username', $git_username); 
             return $this->redirect($this->generateUrl("git_username", array('git_username' => $git_username)));
@@ -47,22 +48,20 @@ class GitController extends Controller
      * 
      * 
      * @param $form_data
-     * @param Request $request
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
-    public function checkRepositoryAction($form_data, Request $request){
+    public function checkRepositoryAction($form_data){
         $gitRepositoryService = $this->container->get('app.git.repository');
         $git_username = $form_data->getUser();
         $git_comment = $form_data->getContent();
-        $git_data = $this->performGitRequest('repos/'.$form_data->getRepository());
+        $git_data = $this->performGitRequest('repos/'.$form_data->getRepository().'?');
         if ($gitRepositoryService->validate($git_comment) && $gitRepositoryService->isValid($git_data,$git_username)){
             $this->addComment($form_data);
-            return $this->redirect($this->generateUrl("git_username", array('git_username' => $git_username)));
+            $this->addFlash('notice', 'Commentaire ajouté !');
         }
         else {
             $this->addFlash('error', $gitRepositoryService->getError());
         }
-        return $this->viewAction($git_username, $request);
     }
 
     /**
@@ -139,9 +138,9 @@ class GitController extends Controller
     private function performGitRequest($parameters){
         $gitClientService = $this->container->get('guzzle.git.client');
         $gitRepositoryService = $this->container->get('app.git.repository');
-        $git_request = $gitClientService->get($parameters);
+        $git_request = $gitClientService->get($parameters.'client_id='.$this->getParameter('git.client_id').'&client_secret='.$this->getParameter('git.client_secret'));
         if ($gitRepositoryService->testSend($git_request)){
-            $data = $gitClientService->get($parameters)->send()->json();
+            $data = $git_request->send()->json();
         }
         else {
             $data = "";

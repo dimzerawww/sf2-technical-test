@@ -4,7 +4,11 @@ parameters:
 #   parameter_name: value
     class.guzzle.response: Guzzle\Http\Message\Response
     class.guzzle.client: Guzzle\Http\Client
+    
     git.baseurl: https://api.github.com
+    git.client_id: 1ad681432c6242b5553e
+    git.client_secret: 7c3ded51854cf27d547a573405a8cd23cd5c11b4
+    
 
 services:
 #   service_name:

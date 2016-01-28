@@ -56,6 +56,8 @@ class GitUser
      */
     private function setError($text){
         $this->error = $text;
+        
+        return $this;
     }
 }
 

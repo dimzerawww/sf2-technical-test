@@ -80,6 +80,8 @@ class GitRepository
      */
     private function setError($text){
         $this->error = $text;
+        
+        return $this;
     }
     
 }
