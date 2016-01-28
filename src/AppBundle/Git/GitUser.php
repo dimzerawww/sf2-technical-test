@@ -9,7 +9,6 @@ class GitUser
     /**
      * Get the latest error message
      * 
-     * @param $username
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
     public function getError(){
