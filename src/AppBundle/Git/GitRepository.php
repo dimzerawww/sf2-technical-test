@@ -39,23 +39,6 @@ class GitRepository
     }
     
     /**
-     * Check if data is correct and if repository username match with username
-     * 
-     * @param $data
-     * @param $comment
-     * @param $username
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
-     */
-    public function validate($comment){
-        if(!empty($comment)) {
-            return true;
-        } else {
-            $this->setError("Veuillez saisir un commentaire");
-            return false;
-        }
-    }
-    
-    /**
      * Check if request will not returns error
      * 
      * @param $gitapi_request
@@ -70,6 +53,23 @@ class GitRepository
         }
         
         return true;
+    }
+    
+    /**
+     * Check if data is correct and if repository username match with username
+     * 
+     * @param $data
+     * @param $comment
+     * @param $username
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     */
+    public function validate($comment){
+        if(!empty($comment)) {
+            return true;
+        } else {
+            $this->setError("Veuillez saisir un commentaire");
+            return false;
+        }
     }
     
     /**

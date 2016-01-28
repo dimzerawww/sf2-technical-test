@@ -52,6 +52,8 @@ class GitController extends Controller
         $gitRepositoryService = $this->container->get('app.git.repository');
         $git_username = $form_data->getUser();
         $git_comment = $form_data->getContent();
+        print_r($form_data->getRepository());
+        die();
         $git_data = $this->performGitRequest('repos/'.$form_data->getRepository().'?');
         if ($gitRepositoryService->validate($git_comment) && $gitRepositoryService->isValid($git_data,$git_username)){
             $this->addComment($form_data);
@@ -109,7 +111,7 @@ class GitController extends Controller
     private function generateCommentForm($user){
         $comment = new Comment();
         $comment->setUser($user);
-        $form = $this->createForm(new CommentType(), $comment);
+        $form = $this->createForm(new CommentType(), $comment, $this->getRepositories($user));
         
         return $form;
     }
@@ -125,6 +127,16 @@ class GitController extends Controller
         $comments = $em->getRepository('AppBundle:Comment')->findBy(array('user' => $user), array('id' => 'DESC'));
 
         return $comments;
+    }
+    
+    private function getRepositories($user){
+        $git_data = $this->performGitRequest('users/'.$user.'/repos?');
+        $git_repositories = array('repositories' => array());
+        foreach($git_data as $repository){
+            $git_repositories['repositories'][$repository['full_name']] = $repository['name'];
+        }
+        
+        return $git_repositories;
     }
     
     /**

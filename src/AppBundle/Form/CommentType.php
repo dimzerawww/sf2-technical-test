@@ -6,6 +6,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 
 class CommentType extends AbstractType
 {
@@ -17,7 +18,11 @@ class CommentType extends AbstractType
     {
         $builder
             ->add('user', HiddenType::class)
-            ->add('repository', 'text')
+            ->add('repository', ChoiceType::class, array(
+                'choices' => $options['repositories'],
+                'choices_as_values' => false,
+                'multiple' => true,
+            ))
             ->add('content', 'textarea')
             ->add('save', 'submit')
         ;
@@ -29,7 +34,8 @@ class CommentType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'AppBundle\Entity\Comment'
+            'data_class' => 'AppBundle\Entity\Comment',
+            'repositories' => array()
         ));
     }
 }
