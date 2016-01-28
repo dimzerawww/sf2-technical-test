@@ -30,20 +30,16 @@ class GitController extends Controller
     public function checkUserAction(Request $request){
         $gitUserService = $this->container->get('app.git.user');
         $git_username = $request->request->get('git_username');
-        if ( $gitUserService->isValid($git_username) ){
-            if ($this->performGitRequest('search/users?q='.$git_username)['total_count'] > 0){
-                $request->getSession()->set('git_username', $git_username); 
-                return $this->redirect($this->generateUrl("git_username", array('git_username' => $git_username)));
-            }
-            else {
-                $error = "Compte GitHub non trouvé";
-            }
+        $git_response = $this->performGitRequest('search/users?q='.$git_username);
+        if ($gitUserService->validate($git_username) && $gitUserService->isValid($git_response)){
+            $request->getSession()->set('git_username', $git_username); 
+            return $this->redirect($this->generateUrl("git_username", array('git_username' => $git_username)));
         }
         else {
-            $error = "Le champ saisi n'est pas une chaine de caractères ou est vide";
+            $this->addFlash('error', $gitUserService->getError());
         }
 
-        return $this->render('AppBundle:Git:index.html.twig', array('error' => $error));
+        return $this->render('AppBundle:Git:index.html.twig');
     }
 
     /**
@@ -56,16 +52,17 @@ class GitController extends Controller
      */
     public function checkRepositoryAction($form_data, Request $request){
         $gitRepositoryService = $this->container->get('app.git.repository');
-        $error = "";
         $git_username = $form_data->getUser();
         $git_comment = $form_data->getContent();
         $git_data = $this->performGitRequest('repos/'.$form_data->getRepository());
-        if ($gitRepositoryService->isValid($git_data, $git_comment, $git_username)){
+        if ($gitRepositoryService->validate($git_comment) && $gitRepositoryService->isValid($git_data,$git_username)){
             $this->addComment($form_data);
             return $this->redirect($this->generateUrl("git_username", array('git_username' => $git_username)));
         }
-        
-        return $this->viewAction($git_username, $request, $error);
+        else {
+            $this->addFlash('error', $gitRepositoryService->getError());
+        }
+        return $this->viewAction($git_username, $request);
     }
 
     /**
@@ -73,10 +70,9 @@ class GitController extends Controller
      * 
      * @param $git_username
      * @param Request $request
-     * @param string $error
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
-    public function viewAction($git_username, Request $request, $error = "")
+    public function viewAction($git_username, Request $request)
     {
         // If username is not in session or is not the same as in session
         if ( !$request->getSession()->get('git_username') || $request->getSession()->get('git_username') != $git_username ){
@@ -91,7 +87,6 @@ class GitController extends Controller
 
         return $this->render('AppBundle:Git:comment.html.twig', array(
             'git_username' => $git_username,
-            'error' => $error,
             'comments' => $this->getComments($git_username),
             'form' => $form->createView(),
         ));
@@ -136,7 +131,7 @@ class GitController extends Controller
     }
     
     /**
-     * Request the Git API to see if user exists
+     * Request the Git API
      * 
      * @param $parameters
      * @return mixed
@@ -147,6 +142,10 @@ class GitController extends Controller
         $git_request = $gitClientService->get($parameters);
         if ($gitRepositoryService->testSend($git_request)){
             $data = $gitClientService->get($parameters)->send()->json();
+        }
+        else {
+            $data = "";
+            $this->addFlash('error', $gitRepositoryService->getError());
         }
         
         return $data;

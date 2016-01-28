@@ -1,9 +1,10 @@
 {% block body %}
 
-    {% if error %}
-        <div class="alert alert-danger">{{ error }}</div>
-    {% endif %}
- 
+    {% for flash_message in app.session.flashbag.get('error') %}
+        <div class="flash-error">
+            {{ flash_message }}
+        </div>
+    {% endfor %}
 
     <form action="{{ path('git_user_check') }}" method="post">
         <label for="git_user">Utilisateur :</label>

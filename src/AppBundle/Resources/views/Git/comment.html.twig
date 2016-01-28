@@ -1,8 +1,10 @@
 {% block body %}
 
-    {% if error %}
-    <div class="alert alert-danger">{{ error }}</div>
-    {% endif %}
+    {% for flash_message in app.session.flashbag.get('error') %}
+        <div class="flash-error">
+            {{ flash_message }}
+        </div>
+    {% endfor %}
  
     {{ form(form) }}
     
