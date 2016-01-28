@@ -46,7 +46,6 @@ class GitController extends Controller
      * 
      * 
      * @param $form_data
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
     public function checkRepositoryAction($form_data){
         $gitRepositoryService = $this->container->get('app.git.repository');
