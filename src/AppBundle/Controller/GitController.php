@@ -17,9 +17,7 @@ class GitController extends Controller
      */
     public function indexAction()
     {
-        return $this->render('AppBundle:Git:index.html.twig', array(
-            'error'         => '',
-        ));
+        return $this->render('AppBundle:Git:index.html.twig', array());
     }
 
     /**
