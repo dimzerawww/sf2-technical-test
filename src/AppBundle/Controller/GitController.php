@@ -52,14 +52,15 @@ class GitController extends Controller
         $gitRepositoryService = $this->container->get('app.git.repository');
         $git_username = $form_data->getUser();
         $git_comment = $form_data->getContent();
-        print_r($form_data->getRepository());
-        $git_data = $this->performGitRequest('repos/'.$form_data->getRepository().'?');
-        if ($gitRepositoryService->validate($git_comment) && $gitRepositoryService->isValid($git_data, $git_username)){
-            $this->addComment($form_data);
-            $this->addFlash('notice', 'Commentaire ajouté !');
-        }
-        else {
-            $this->addFlash('error', $gitRepositoryService->getError());
+        foreach ($form_data->getRepository() as $repository){
+            $git_data = $this->performGitRequest('repos/'.$repository.'?');
+            if ($gitRepositoryService->validate($git_comment) && $gitRepositoryService->isValid($git_data, $git_username)){
+                $this->addComment($form_data, $repository);
+                $this->addFlash('notice', 'Le commentaire a été ajouté sur le dépôt '.$repository);
+            }
+            else {
+                $this->addFlash('error', $gitRepositoryService->getError());
+            }
         }
     }
 
@@ -95,7 +96,9 @@ class GitController extends Controller
      *
      * @param $comment
      */
-    private function addComment($comment){
+    private function addComment($form_data, $repository){
+        $comment = $form_data;
+        $comment->setRepository($repository);
         $em = $this->getDoctrine()->getManager();
         $em->persist($comment);
         $em->flush();
