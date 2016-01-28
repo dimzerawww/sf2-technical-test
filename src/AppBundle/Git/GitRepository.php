@@ -12,7 +12,7 @@ class GitRepository
      * Get the latest error message
      * 
      * @param $username
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     * @return string
      */
     public function getError(){
         return $this->error;
@@ -24,7 +24,7 @@ class GitRepository
      * @param $data
      * @param $comment
      * @param $username
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     * @return boolean
      */
     public function isValid($data, $username){
        if(!isset($data['owner'])
@@ -42,7 +42,7 @@ class GitRepository
      * Check if request will not returns error
      * 
      * @param $gitapi_request
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     * @return boolean
      */
     public function testSend($gitapi_request){
         try{
@@ -61,7 +61,7 @@ class GitRepository
      * @param $data
      * @param $comment
      * @param $username
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     * @return boolean
      */
     public function validate($comment){
         if(!empty($comment)) {
@@ -76,7 +76,7 @@ class GitRepository
      * Define error text
      * 
      * @param $text
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     * @return string
      */
     private function setError($text){
         $this->error = $text;

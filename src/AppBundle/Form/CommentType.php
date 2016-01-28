@@ -21,7 +21,7 @@ class CommentType extends AbstractType
             ->add('repository', ChoiceType::class, array(
                 'choices' => $options['repositories'],
                 'choices_as_values' => false,
-                'multiple' => true,
+                'multiple' => true
             ))
             ->add('content', 'textarea')
             ->add('save', 'submit')

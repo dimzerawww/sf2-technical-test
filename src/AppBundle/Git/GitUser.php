@@ -9,7 +9,7 @@ class GitUser
     /**
      * Get the latest error message
      * 
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     * @return string
      */
     public function getError(){
         return $this->error;
@@ -19,7 +19,7 @@ class GitUser
      * Check if git response have user
      * 
      * @param $git_response
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     * @return boolean
      */
     public function isValid($git_response){
         if (isset($git_response['total_count']) && $git_response['total_count'] > 0){
@@ -35,7 +35,7 @@ class GitUser
      * Check if username is string and is not empty
      * 
      * @param $username
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     * @return boolean
      */
     public function validate($username){
         if (is_string($username) && !empty($username)){
@@ -51,7 +51,7 @@ class GitUser
      * Define error text
      * 
      * @param $text
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     * @return string
      */
     private function setError($text){
         $this->error = $text;

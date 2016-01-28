@@ -53,9 +53,8 @@ class GitController extends Controller
         $git_username = $form_data->getUser();
         $git_comment = $form_data->getContent();
         print_r($form_data->getRepository());
-        die();
         $git_data = $this->performGitRequest('repos/'.$form_data->getRepository().'?');
-        if ($gitRepositoryService->validate($git_comment) && $gitRepositoryService->isValid($git_data,$git_username)){
+        if ($gitRepositoryService->validate($git_comment) && $gitRepositoryService->isValid($git_data, $git_username)){
             $this->addComment($form_data);
             $this->addFlash('notice', 'Commentaire ajouté !');
         }
@@ -129,6 +128,12 @@ class GitController extends Controller
         return $comments;
     }
     
+    /**
+     * Get repositories of the user (with Git API)
+     * 
+     * @param $user
+     * @return array
+     */
     private function getRepositories($user){
         $git_data = $this->performGitRequest('users/'.$user.'/repos?');
         $git_repositories = array('repositories' => array());
