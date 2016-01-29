@@ -8,6 +8,10 @@ use AppBundle\Entity\Comment;
 
 class GitRepository
 {
+    /**
+     *
+     * @var string 
+     */
     private $error = null;
     
     /**

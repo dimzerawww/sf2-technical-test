@@ -4,6 +4,10 @@ namespace AppBundle\Git;
 
 class GitUser
 {
+    /**
+     *
+     * @var string 
+     */
     private $error = null;
     
     /**
