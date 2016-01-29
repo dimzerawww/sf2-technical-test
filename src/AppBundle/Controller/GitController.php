@@ -46,7 +46,7 @@ class GitController extends Controller
     /**
      * Display the comment page with the comment form
      * 
-     * @param $git_username
+     * @param string $git_username
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
@@ -86,9 +86,10 @@ class GitController extends Controller
     }
 
     /**
-     * Persist the posted comment
-     *
-     * @param $comment
+     * 
+     * @param string $user
+     * @param string $content
+     * @param string $repository
      */
     private function addComment($user, $content, $repository)
     {
@@ -105,7 +106,7 @@ class GitController extends Controller
     /**
      * Generate the comment form
      * 
-     * @param $user
+     * @param string $user
      * @return mixed
      */
     private function generateCommentForm($user)
@@ -120,7 +121,7 @@ class GitController extends Controller
     /**
      * Get comments of the user
      * 
-     * @param $user
+     * @param string $user
      * @return mixed
      */
     private function getComments($user){
@@ -133,7 +134,7 @@ class GitController extends Controller
     /**
      * Get repositories of the user (with Git API)
      * 
-     * @param $user
+     * @param string $user
      * @return array
      */
     private function getRepositories($user)
@@ -150,7 +151,7 @@ class GitController extends Controller
     /**
      * Request the Git API
      * 
-     * @param $parameters
+     * @param string $parameters
      * @return mixed
      */
     private function performGitRequest($parameters)

@@ -66,7 +66,7 @@ class GitRepository
         
         if (!isset($data['owner'])
             || !isset($data['owner']['login'])
-            || !$data['owner']['login'] == $comment->getUser()
+            || $data['owner']['login'] != $comment->getUser()
         ) {
             $this->setError("Ce dépôt n'appartient pas à l'utilisateur Git saisi précédemment");
         }
