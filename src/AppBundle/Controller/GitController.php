@@ -28,7 +28,7 @@ class GitController extends Controller
      */
     public function checkUserAction(Request $request)
     {
-        $gitUserService = $this->container->get('app.git.user');
+        $gitUserService = $this->get('app.git.user');
         $git_username = $request->request->get('git_username');
         $git_response = $this->performGitRequest('search/users?q='.$git_username.'&');
         $gitUserService->validate($git_username, $git_response);
@@ -155,8 +155,8 @@ class GitController extends Controller
      */
     private function performGitRequest($parameters)
     {
-        $gitClientService = $this->container->get('guzzle.git.client');
-        $gitRepositoryService = $this->container->get('app.git.repository');
+        $gitClientService = $this->get('guzzle.git.client');
+        $gitRepositoryService = $this->get('app.git.repository');
         $git_request = $gitClientService->get($parameters.'client_id='.$this->getParameter('git.client_id').'&client_secret='.$this->getParameter('git.client_secret'));
         if ($gitRepositoryService->trySend($git_request)) {
             $data = $git_request->send()->json();
