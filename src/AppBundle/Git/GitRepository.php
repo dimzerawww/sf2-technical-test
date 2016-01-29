@@ -78,7 +78,7 @@ class GitRepository
      * @param string $text
      * @return string
      */
-    private function setError($text)
+    protected function setError($text)
     {
         $this->error = $text;
         
