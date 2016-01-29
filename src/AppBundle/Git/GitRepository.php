@@ -6,7 +6,7 @@ use Guzzle\Http\Exception\RequestException;
 
 class GitRepository
 {
-    private $error;
+    private $error = null ;
     
     /**
      * Get the latest error message
@@ -19,23 +19,12 @@ class GitRepository
     }
     
     /**
-     * Check if data is correct and if repository username match with username
+     * Check if repository is valid
      * 
-     * @param $data
-     * @param $comment
-     * @param $username
-     * @return boolean
+     * @return type
      */
-    public function isValid($data, $username){
-       if(!isset($data['owner'])
-            || !isset($data['owner']['login'])
-            || !$data['owner']['login'] == $username
-        ) {
-            $this->setError("Ce dépôt n'appartient pas à l'utilisateur Git saisi précédemment");
-            return false;
-        } else {
-            return true;
-        }
+    public function isValid(){
+        return $this->error === null;
     }
     
     /**
@@ -58,17 +47,19 @@ class GitRepository
     /**
      * Check if data is correct and if repository username match with username
      * 
-     * @param $data
-     * @param $comment
-     * @param $username
-     * @return boolean
+     * @param \AppBundle\Entity\Comment $comment
+     * @param type $data
      */
-    public function validate($comment){
-        if(!empty($comment)) {
-            return true;
-        } else {
+    public function validate(\AppBundle\Entity\Comment $comment, $data = array()){
+        if(empty($comment->getContent())) {
             $this->setError("Veuillez saisir un commentaire");
-            return false;
+        } 
+        
+        if(!isset($data['owner'])
+            || !isset($data['owner']['login'])
+            || !$data['owner']['login'] == $comment->getUser()
+        ) {
+            $this->setError("Ce dépôt n'appartient pas à l'utilisateur Git saisi précédemment");
         }
     }
     

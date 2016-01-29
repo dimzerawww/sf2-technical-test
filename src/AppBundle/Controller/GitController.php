@@ -30,7 +30,8 @@ class GitController extends Controller
         $gitUserService = $this->container->get('app.git.user');
         $git_username = $request->request->get('git_username');
         $git_response = $this->performGitRequest('search/users?q='.$git_username.'&');
-        if ($gitUserService->validate($git_username) && $gitUserService->isValid($git_response)){
+        $gitUserService->validate($git_username, $git_response);
+        if ($gitUserService->isValid()){
             $request->getSession()->set('git_username', $git_username); 
             return $this->redirect($this->generateUrl("git_username", array('git_username' => $git_username)));
         }
@@ -41,27 +42,6 @@ class GitController extends Controller
         return $this->render('AppBundle:Git:index.html.twig');
     }
 
-    /**
-     * Check if repository exists, if it is a repository of the user and add the comment
-     * 
-     * 
-     * @param $form_data
-     */
-    public function checkRepositoryAction($form_data){
-        $gitRepositoryService = $this->container->get('app.git.repository');
-        $git_username = $form_data->getUser();
-        $git_comment = $form_data->getContent();
-        foreach ($form_data->getRepository() as $git_repository){
-            $git_data = $this->performGitRequest('repos/'.$git_repository.'?');
-            if ($gitRepositoryService->validate($git_comment) && $gitRepositoryService->isValid($git_data, $git_username)){
-                $this->addComment($git_username, $git_comment, $git_repository);
-                $this->addFlash('notice', 'Le commentaire a été ajouté sur le dépôt '.$git_repository);
-            }
-            else {
-                $this->addFlash('error', $gitRepositoryService->getError());
-            }
-        }
-    }
 
     /**
      * Display the comment page with the comment form
@@ -77,10 +57,26 @@ class GitController extends Controller
             return $this->redirectToRoute('git');
         }
         
+        $gitRepositoryService = $this->get('app.git.repository');
+        
         $form = $this->generateCommentForm($git_username);
         $form->handleRequest($request);
         if ($form->isValid()){
-            $this->checkRepositoryAction($form->getData(), $request);
+            $form_data = $form->getData();
+            $git_username = $form_data->getUser();
+            $git_comment = $form_data->getContent();
+            
+            foreach ($form_data->getRepository() as $git_repository) {
+                $git_data = $this->performGitRequest('repos/'.$git_repository.'?');
+                $gitRepositoryService->validate($form_data, $git_data);
+                if ($gitRepositoryService->isValid()) {
+                    $this->addComment($git_username, $git_comment, $git_repository);
+                    $this->addFlash('notice', 'Le commentaire a été ajouté sur le dépôt '.$git_repository);
+                }
+                else {
+                    $this->addFlash('error', $gitRepositoryService->getError());
+                }
+            }
         }
 
         return $this->render('AppBundle:Git:comment.html.twig', array(
@@ -97,7 +93,10 @@ class GitController extends Controller
      */
     private function addComment($user, $content, $repository){
         $comment = new Comment();
-        $comment->setUser($user)->setContent($content)->setRepository($repository);
+        $comment->setUser($user);
+        $comment->setContent($content);
+        $comment->setRepository($repository);
+        
         $em = $this->getDoctrine()->getManager();
         $em->persist($comment);
         $em->flush();
@@ -112,7 +111,7 @@ class GitController extends Controller
     private function generateCommentForm($user){
         $comment = new Comment();
         $comment->setUser($user);
-        $form = $this->createForm(new CommentType(), $comment, $this->getRepositories($user));
+        $form = $this->createForm(new CommentType(), $comment, array('repositories' => $this->getRepositories($user)));
         
         return $form;
     }
@@ -138,9 +137,9 @@ class GitController extends Controller
      */
     private function getRepositories($user){
         $git_data = $this->performGitRequest('users/'.$user.'/repos?');
-        $git_repositories = array('repositories' => array());
+        $git_repositories = array();
         foreach($git_data as $repository){
-            $git_repositories['repositories'][$repository['full_name']] = $repository['name'];
+            $git_repositories[$repository['full_name']] = $repository['name'];
         }
         
         return $git_repositories;

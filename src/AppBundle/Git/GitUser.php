@@ -16,34 +16,27 @@ class GitUser
     }
     
     /**
-     * Check if git response have user
+     * Check if user is valid
      * 
-     * @param $git_response
-     * @return boolean
+     * @return type
      */
-    public function isValid($git_response){
-        if (isset($git_response['total_count']) && $git_response['total_count'] > 0){
-            return true;
-        }
-        else {
-            $this->setError("Compte GitHub non trouvé");
-            return false;
-        }
+    public function isValid(){
+        return $this->error === null;
     }
     
     /**
-     * Check if username is string and is not empty
+     * Check if username is string or is not empty and if git response returned a user
      * 
      * @param $username
      * @return boolean
      */
-    public function validate($username){
-        if (is_string($username) && !empty($username)){
-            return true;
-        }
-        else {
+    public function validate($username, $git_response){
+        if (!is_string($username) || empty($username)){
             $this->setError("Le champ saisi n'est pas une chaine de caractères ou est vide");
-            return false;
+        }
+        
+        if (!isset($git_response['total_count']) || $git_response['total_count'] == 0){
+            $this->setError("Compte GitHub non trouvé");
         }
     }
     

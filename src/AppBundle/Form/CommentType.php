@@ -23,7 +23,7 @@ class CommentType extends AbstractType
                 'choices_as_values' => false,
                 'multiple' => true
             ))
-            ->add('content', 'textarea')
+            ->add('content', 'textarea', array('constraints' => array(new \Symfony\Component\Validator\Constraints\NotBlank())))
             ->add('save', 'submit')
         ;
     }
