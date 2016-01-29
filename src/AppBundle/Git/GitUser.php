@@ -4,7 +4,7 @@ namespace AppBundle\Git;
 
 class GitUser
 {
-    private $error;
+    private $error = null;
     
     /**
      * Get the latest error message
@@ -18,7 +18,7 @@ class GitUser
     /**
      * Check if user is valid
      * 
-     * @return type
+     * @return boolean
      */
     public function isValid(){
         return $this->error === null;
@@ -27,8 +27,8 @@ class GitUser
     /**
      * Check if username is string or is not empty and if git response returned a user
      * 
-     * @param $username
-     * @return boolean
+     * @param string $username
+     * @param array $git_response
      */
     public function validate($username, $git_response){
         if (!is_string($username) || empty($username)){
@@ -43,7 +43,7 @@ class GitUser
     /**
      * Define error text
      * 
-     * @param $text
+     * @param string $text
      * @return string
      */
     private function setError($text){

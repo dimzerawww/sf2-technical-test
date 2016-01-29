@@ -155,7 +155,7 @@ class GitController extends Controller
         $gitClientService = $this->container->get('guzzle.git.client');
         $gitRepositoryService = $this->container->get('app.git.repository');
         $git_request = $gitClientService->get($parameters.'client_id='.$this->getParameter('git.client_id').'&client_secret='.$this->getParameter('git.client_secret'));
-        if ($gitRepositoryService->testSend($git_request)){
+        if ($gitRepositoryService->trySend($git_request)){
             $data = $git_request->send()->json();
         }
         else {

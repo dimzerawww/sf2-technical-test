@@ -3,15 +3,16 @@
 namespace AppBundle\Git;
 
 use Guzzle\Http\Exception\RequestException;
+use Guzzle\Http\Message\RequestInterface;
+use AppBundle\Entity\Comment;
 
 class GitRepository
 {
-    private $error = null ;
+    private $error = null;
     
     /**
      * Get the latest error message
      * 
-     * @param $username
      * @return string
      */
     public function getError(){
@@ -21,7 +22,7 @@ class GitRepository
     /**
      * Check if repository is valid
      * 
-     * @return type
+     * @return boolean
      */
     public function isValid(){
         return $this->error === null;
@@ -30,10 +31,10 @@ class GitRepository
     /**
      * Check if request will not returns error
      * 
-     * @param $gitapi_request
+     * @param RequestInterface $gitapi_request 
      * @return boolean
      */
-    public function testSend($gitapi_request){
+    public function trySend(RequestInterface $gitapi_request){
         try{
             $gitapi_request->send();
         } catch (RequestException $e) {
@@ -47,10 +48,10 @@ class GitRepository
     /**
      * Check if data is correct and if repository username match with username
      * 
-     * @param \AppBundle\Entity\Comment $comment
-     * @param type $data
+     * @param Comment $comment
+     * @param array $data
      */
-    public function validate(\AppBundle\Entity\Comment $comment, $data = array()){
+    public function validate(Comment $comment, $data = array()){
         if(empty($comment->getContent())) {
             $this->setError("Veuillez saisir un commentaire");
         } 
@@ -66,7 +67,7 @@ class GitRepository
     /**
      * Define error text
      * 
-     * @param $text
+     * @param string $text
      * @return string
      */
     private function setError($text){
