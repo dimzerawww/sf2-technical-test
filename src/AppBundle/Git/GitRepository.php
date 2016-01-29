@@ -15,7 +15,8 @@ class GitRepository
      * 
      * @return string
      */
-    public function getError(){
+    public function getError()
+    {
         return $this->error;
     }
     
@@ -24,7 +25,8 @@ class GitRepository
      * 
      * @return boolean
      */
-    public function isValid(){
+    public function isValid()
+    {
         return $this->error === null;
     }
     
@@ -34,8 +36,9 @@ class GitRepository
      * @param RequestInterface $gitapi_request 
      * @return boolean
      */
-    public function trySend(RequestInterface $gitapi_request){
-        try{
+    public function trySend(RequestInterface $gitapi_request)
+    {
+        try {
             $gitapi_request->send();
         } catch (RequestException $e) {
             $this->setError('API Erreur '.$e->getResponse()->getStatusCode());
@@ -51,12 +54,13 @@ class GitRepository
      * @param Comment $comment
      * @param array $data
      */
-    public function validate(Comment $comment, $data = array()){
-        if(empty($comment->getContent())) {
+    public function validate(Comment $comment, $data = array())
+    {
+        if (empty($comment->getContent())) {
             $this->setError("Veuillez saisir un commentaire");
         } 
         
-        if(!isset($data['owner'])
+        if (!isset($data['owner'])
             || !isset($data['owner']['login'])
             || !$data['owner']['login'] == $comment->getUser()
         ) {
@@ -70,7 +74,8 @@ class GitRepository
      * @param string $text
      * @return string
      */
-    private function setError($text){
+    private function setError($text)
+    {
         $this->error = $text;
         
         return $this;

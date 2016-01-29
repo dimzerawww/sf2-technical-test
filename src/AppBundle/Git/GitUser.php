@@ -11,7 +11,8 @@ class GitUser
      * 
      * @return string
      */
-    public function getError(){
+    public function getError()
+    {
         return $this->error;
     }
     
@@ -20,7 +21,8 @@ class GitUser
      * 
      * @return boolean
      */
-    public function isValid(){
+    public function isValid()
+    {
         return $this->error === null;
     }
     
@@ -30,12 +32,13 @@ class GitUser
      * @param string $username
      * @param array $git_response
      */
-    public function validate($username, $git_response){
-        if (!is_string($username) || empty($username)){
+    public function validate($username, $git_response)
+    {
+        if (!is_string($username) || empty($username)) {
             $this->setError("Le champ saisi n'est pas une chaine de caractères ou est vide");
         }
         
-        if (!isset($git_response['total_count']) || $git_response['total_count'] == 0){
+        if (!isset($git_response['total_count']) || $git_response['total_count'] == 0) {
             $this->setError("Compte GitHub non trouvé");
         }
     }
@@ -46,7 +49,8 @@ class GitUser
      * @param string $text
      * @return string
      */
-    private function setError($text){
+    private function setError($text)
+    {
         $this->error = $text;
         
         return $this;

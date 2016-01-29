@@ -26,16 +26,16 @@ class GitController extends Controller
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
-    public function checkUserAction(Request $request){
+    public function checkUserAction(Request $request)
+    {
         $gitUserService = $this->container->get('app.git.user');
         $git_username = $request->request->get('git_username');
         $git_response = $this->performGitRequest('search/users?q='.$git_username.'&');
         $gitUserService->validate($git_username, $git_response);
-        if ($gitUserService->isValid()){
+        if ($gitUserService->isValid()) {
             $request->getSession()->set('git_username', $git_username); 
             return $this->redirect($this->generateUrl("git_username", array('git_username' => $git_username)));
-        }
-        else {
+        } else {
             $this->addFlash('error', $gitUserService->getError());
         }
 
@@ -53,7 +53,7 @@ class GitController extends Controller
     public function viewAction($git_username, Request $request)
     {
         // If username is not in session or is not the same as in session
-        if ( !$request->getSession()->get('git_username') || $request->getSession()->get('git_username') != $git_username ){
+        if (!$request->getSession()->get('git_username') || $request->getSession()->get('git_username') != $git_username) {
             return $this->redirectToRoute('git');
         }
         
@@ -61,7 +61,7 @@ class GitController extends Controller
         
         $form = $this->generateCommentForm($git_username);
         $form->handleRequest($request);
-        if ($form->isValid()){
+        if ($form->isValid()) {
             $form_data = $form->getData();
             $git_username = $form_data->getUser();
             $git_comment = $form_data->getContent();
@@ -72,8 +72,7 @@ class GitController extends Controller
                 if ($gitRepositoryService->isValid()) {
                     $this->addComment($git_username, $git_comment, $git_repository);
                     $this->addFlash('notice', 'Le commentaire a été ajouté sur le dépôt '.$git_repository);
-                }
-                else {
+                } else {
                     $this->addFlash('error', $gitRepositoryService->getError());
                 }
             }
@@ -91,7 +90,8 @@ class GitController extends Controller
      *
      * @param $comment
      */
-    private function addComment($user, $content, $repository){
+    private function addComment($user, $content, $repository)
+    {
         $comment = new Comment();
         $comment->setUser($user);
         $comment->setContent($content);
@@ -108,7 +108,8 @@ class GitController extends Controller
      * @param $user
      * @return mixed
      */
-    private function generateCommentForm($user){
+    private function generateCommentForm($user)
+    {
         $comment = new Comment();
         $comment->setUser($user);
         $form = $this->createForm(new CommentType(), $comment, array('repositories' => $this->getRepositories($user)));
@@ -135,10 +136,11 @@ class GitController extends Controller
      * @param $user
      * @return array
      */
-    private function getRepositories($user){
+    private function getRepositories($user)
+    {
         $git_data = $this->performGitRequest('users/'.$user.'/repos?');
         $git_repositories = array();
-        foreach($git_data as $repository){
+        foreach ($git_data as $repository) {
             $git_repositories[$repository['full_name']] = $repository['name'];
         }
         
@@ -151,14 +153,14 @@ class GitController extends Controller
      * @param $parameters
      * @return mixed
      */
-    private function performGitRequest($parameters){
+    private function performGitRequest($parameters)
+    {
         $gitClientService = $this->container->get('guzzle.git.client');
         $gitRepositoryService = $this->container->get('app.git.repository');
         $git_request = $gitClientService->get($parameters.'client_id='.$this->getParameter('git.client_id').'&client_secret='.$this->getParameter('git.client_secret'));
-        if ($gitRepositoryService->trySend($git_request)){
+        if ($gitRepositoryService->trySend($git_request)) {
             $data = $git_request->send()->json();
-        }
-        else {
+        } else {
             $data = "";
             $this->addFlash('error', $gitRepositoryService->getError());
         }
