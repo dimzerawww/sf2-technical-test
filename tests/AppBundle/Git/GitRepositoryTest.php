@@ -28,11 +28,45 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
+     * get a Mock Object of Guzzle Http Client class
+     */
+    public function mockHttpClient(){
+        return m::mock('Guzzle\Http\Client');
+    }
+    
+    /**
+     * get a Mock Object of Guzzle Http Message RequestInterface class
+     */
+    public function mockRequestInterface(){
+        return m::mock('Guzzle\Http\Message\RequestInterface');
+    }
+    
+    /**
      * Test the trySend function of GitRepository class
      */
-    public function testTrySend()
+    public function testTrySendIfRequestIsValid()
     {
+        $mockedGitRepository = $this->mockGitRepository();
+        $mockedRequestInterface = $this->mockRequestInterface();
         
+        $mockedRequestInterface->shouldReceive('send')->once();
+        $mockedGitRepository->shouldReceive('setError')->never();
+        $mockedGitRepository->trySend($mockedRequestInterface);
+    }
+    
+    /**
+     * Test the trySend function of GitRepository class
+     */
+    public function testTrySendIfRequestIsInvalid()
+    {
+        /*
+        $mockedGitRepository = $this->mockGitRepository();
+        $mockedRequestInterface = $this->mockRequestInterface();
+        
+        $mockedRequestInterface->shouldReceive('send')->once()->andThrow();
+        $mockedGitRepository->shouldReceive('setError')->never();
+        $mockedGitRepository->trySend($mockedRequestInterface);
+        */
     }
     
     /**
