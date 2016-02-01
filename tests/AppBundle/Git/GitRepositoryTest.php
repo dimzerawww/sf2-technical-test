@@ -9,40 +9,61 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
     /**
      * @after
      */
-    public function closeMockup(){
+    public function closeMockup()
+    {
         m::close();
     }
     
     /**
      * get a Mock Object of Comment class
      */
-    public function mockComment(){
+    public function mockComment()
+    {
         return m::mock('AppBundle\Entity\Comment');
     }
     
     /**
      * get a Mock Object of GitRepository class
      */
-    public function mockGitRepository(){
+    public function mockGitRepository()
+    {
         return m::mock('AppBundle\Git\GitRepository')->makePartial()->shouldAllowMockingProtectedMethods();
     }
     
     /**
      * get a Mock Object of Guzzle Http Client class
      */
-    public function mockHttpClient(){
+    public function mockHttpClient()
+    {
         return m::mock('Guzzle\Http\Client');
+    }
+    
+    /**
+     * get a Mock Object of Guzzle Http Message RequestException class
+     */
+    public function mockRequestException()
+    {
+        return m::mock('Guzzle\Http\Exception\RequestException');
     }
     
     /**
      * get a Mock Object of Guzzle Http Message RequestInterface class
      */
-    public function mockRequestInterface(){
+    public function mockRequestInterface()
+    {
         return m::mock('Guzzle\Http\Message\RequestInterface');
     }
     
     /**
-     * Test the trySend function of GitRepository class
+     * get a Mock Object of Guzzle Http Message Response class
+     */
+    public function mockResponse()
+    {
+        return m::mock('Guzzle\Http\Message\Response');
+    }
+    
+    /**
+     * Test the trySend function of GitRepository class if request is valid
      */
     public function testTrySendIfRequestIsValid()
     {
@@ -55,18 +76,20 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
-     * Test the trySend function of GitRepository class
+     * Test the trySend function of GitRepository class if request is invalid
      */
     public function testTrySendIfRequestIsInvalid()
     {
-        /*
         $mockedGitRepository = $this->mockGitRepository();
+        $mockedRequestException = $this->mockRequestException();
         $mockedRequestInterface = $this->mockRequestInterface();
+        $mockedResponse = $this->mockResponse();
         
-        $mockedRequestInterface->shouldReceive('send')->once()->andThrow();
-        $mockedGitRepository->shouldReceive('setError')->never();
+        $mockedRequestInterface->shouldReceive('send')->once()->andThrow($mockedRequestException);
+        $mockedRequestException->shouldReceive('getResponse')->andReturn($mockedResponse);
+        $mockedResponse->shouldReceive('getStatusCode')->andReturn('404');
+        $mockedGitRepository->shouldReceive('setError')->once();
         $mockedGitRepository->trySend($mockedRequestInterface);
-        */
     }
     
     /**
